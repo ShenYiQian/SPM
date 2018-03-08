@@ -177,12 +177,16 @@ var HttpRequest;
     function post(uri, params) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
+                let resStr = '';
                 request.post(`${Spm.getConfig().remote_repo}${uri}`)
                     .form(params)
                     .on('response', (response) => {
                     response.on('data', (chunk) => {
+                        resStr += chunk.toString();
+                    });
+                    response.on('end', () => {
                         try {
-                            resolve(SpmPackageRequest.parseResponse(chunk));
+                            resolve(SpmPackageRequest.parseResponse(resStr));
                         }
                         catch (e) {
                             reject(e);

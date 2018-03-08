@@ -189,16 +189,20 @@ export namespace SpmPackageRequest {
 export namespace HttpRequest {
     export async function post(uri: string, params: {[key: string]: any}): Promise<any> {
         return new Promise((resolve, reject) => {
+            let resStr = '';
             request.post(`${Spm.getConfig().remote_repo}${uri}`)
                 .form(params)
                 .on('response', (response) => {
                     response.on('data', (chunk) => {
+                        resStr += chunk.toString();
+                    });
+                    response.on('end', () => {
                         try {
-                            resolve(SpmPackageRequest.parseResponse(chunk));
+                            resolve(SpmPackageRequest.parseResponse(resStr));
                         } catch (e) {
                             reject(e);
                         }
-                    });
+                    })
                 })
                 .on('error', (e) => {
                     reject(e);
